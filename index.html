@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AeroMix - A real-time virtual DJ mixer and megaphone web application. Mix tracks with dual loading decks, sync tempos, crossfade, and voiceover with real-time microphone effects.">
+  <title>AeroMix | Dual-Deck DJ Mixer &amp; Mic</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="glass-bg-decor decor-1"></div>
+  <div class="glass-bg-decor decor-2"></div>
+  <div class="glass-bg-decor decor-3"></div>
+
+  <main class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo-area">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <h1>AeroMix</h1>
+          <p>Dual-Deck Virtual DJ Console &amp; MC Microphone</p>
+        </div>
+      </div>
+      
+      <div class="status-badge-container">
+        <span id="status-badge" class="status-badge offline">System Offline</span>
+      </div>
+    </header>
+
+    <!-- DJ DECKS ROW -->
+    <section class="decks-row">
+      <!-- DECK A (Left) -->
+      <div class="deck-card glass-panel deck-a">
+        <div class="deck-header">
+          <h2>Deck A</h2>
+          <span id="deck-a-bpm-display" class="bpm-badge">120.0 BPM</span>
+        </div>
+        
+        <div class="deck-body">
+          <div class="vinyl-wrapper">
+            <div id="deck-a-vinyl" class="vinyl-disc">
+              <div class="vinyl-groove"></div>
+              <div class="vinyl-center label-a">A</div>
+            </div>
+          </div>
+          
+          <div class="track-details">
+            <div id="deck-a-track-name" class="track-title">No Track Loaded</div>
+            <div id="deck-a-time" class="track-duration-text">00:00 / 00:00</div>
+          </div>
+        </div>
+
+        <div class="deck-controls">
+          <input type="file" id="deck-a-file-input" accept="audio/*" class="file-input-hidden">
+          <button id="deck-a-load-btn" class="deck-btn-secondary">Load Track</button>
+          
+          <div class="deck-btn-group">
+            <button id="deck-a-play-btn" class="deck-btn-primary play">Play</button>
+            <button id="deck-a-cue-btn" class="deck-btn-primary cue">Cue</button>
+          </div>
+        </div>
+
+        <div class="deck-advanced-panel">
+          <div class="eq-controls">
+            <div class="eq-knob"><label>High</label><input type="range" id="deck-a-eq-high" min="-40" max="10" step="1" value="0"></div>
+            <div class="eq-knob"><label>Mid</label><input type="range" id="deck-a-eq-mid" min="-40" max="10" step="1" value="0"></div>
+            <div class="eq-knob"><label>Low</label><input type="range" id="deck-a-eq-low" min="-40" max="10" step="1" value="0"></div>
+          </div>
+          <div class="loop-controls">
+            <button id="deck-a-loop-in" class="loop-btn">In</button>
+            <button id="deck-a-loop-out" class="loop-btn">Out</button>
+            <button id="deck-a-loop-exit" class="loop-btn">Exit</button>
+          </div>
+        </div>
+
+        <div class="deck-pitch-panel">
+          <div class="pitch-labels">
+            <span>Tempo (Pitch)</span>
+            <span id="deck-a-pitch-val">1.00x</span>
+          </div>
+          <div class="pitch-slider-container">
+            <input type="range" id="deck-a-pitch-slider" min="0.90" max="1.10" step="0.001" value="1.00">
+            <button id="deck-a-pitch-reset" class="mini-btn">Reset</button>
+          </div>
+          
+          <div class="bpm-matching-controls">
+            <div class="bpm-field">
+              <label for="deck-a-bpm-input">Base BPM</label>
+              <input type="number" id="deck-a-bpm-input" value="120.0" step="0.1" min="40" max="250">
+            </div>
+            <button id="deck-a-sync-btn" class="sync-btn" title="Sync Deck A tempo to Deck B">Sync A ➔ B</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- DECK B (Right) -->
+      <div class="deck-card glass-panel deck-b">
+        <div class="deck-header">
+          <h2>Deck B</h2>
+          <span id="deck-b-bpm-display" class="bpm-badge">120.0 BPM</span>
+        </div>
+        
+        <div class="deck-body">
+          <div class="vinyl-wrapper">
+            <div id="deck-b-vinyl" class="vinyl-disc">
+              <div class="vinyl-groove"></div>
+              <div class="vinyl-center label-b">B</div>
+            </div>
+          </div>
+          
+          <div class="track-details">
+            <div id="deck-b-track-name" class="track-title">No Track Loaded</div>
+            <div id="deck-b-time" class="track-duration-text">00:00 / 00:00</div>
+          </div>
+        </div>
+
+        <div class="deck-controls">
+          <input type="file" id="deck-b-file-input" accept="audio/*" class="file-input-hidden">
+          <button id="deck-b-load-btn" class="deck-btn-secondary">Load Track</button>
+          
+          <div class="deck-btn-group">
+            <button id="deck-b-play-btn" class="deck-btn-primary play">Play</button>
+            <button id="deck-b-cue-btn" class="deck-btn-primary cue">Cue</button>
+          </div>
+        </div>
+
+        <div class="deck-advanced-panel">
+          <div class="eq-controls">
+            <div class="eq-knob"><label>High</label><input type="range" id="deck-b-eq-high" min="-40" max="10" step="1" value="0"></div>
+            <div class="eq-knob"><label>Mid</label><input type="range" id="deck-b-eq-mid" min="-40" max="10" step="1" value="0"></div>
+            <div class="eq-knob"><label>Low</label><input type="range" id="deck-b-eq-low" min="-40" max="10" step="1" value="0"></div>
+          </div>
+          <div class="loop-controls">
+            <button id="deck-b-loop-in" class="loop-btn">In</button>
+            <button id="deck-b-loop-out" class="loop-btn">Out</button>
+            <button id="deck-b-loop-exit" class="loop-btn">Exit</button>
+          </div>
+        </div>
+
+        <div class="deck-pitch-panel">
+          <div class="pitch-labels">
+            <span>Tempo (Pitch)</span>
+            <span id="deck-b-pitch-val">1.00x</span>
+          </div>
+          <div class="pitch-slider-container">
+            <input type="range" id="deck-b-pitch-slider" min="0.90" max="1.10" step="0.001" value="1.00">
+            <button id="deck-b-pitch-reset" class="mini-btn">Reset</button>
+          </div>
+          
+          <div class="bpm-matching-controls">
+            <div class="bpm-field">
+              <label for="deck-b-bpm-input">Base BPM</label>
+              <input type="number" id="deck-b-bpm-input" value="120.0" step="0.1" min="40" max="250">
+            </div>
+            <button id="deck-b-sync-btn" class="sync-btn" title="Sync Deck B tempo to Deck A">Sync B ➔ A</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DJ MIXER & CROSSFADER BOARD -->
+    <section class="mixer-console-panel glass-panel">
+      <div class="mixer-channels-grid">
+        <!-- Master Output Volume Slider -->
+        <div class="master-volume-channel">
+          <div class="slider-header">
+            <span class="slider-name">🔊 Master Volume</span>
+            <span id="master-volume-val" class="slider-val">80%</span>
+          </div>
+          <input type="range" id="master-volume-slider" min="0" max="100" step="1" value="80" aria-label="Master Volume">
+        </div>
+        
+        <!-- Crossfader Channel -->
+        <div class="crossfader-channel">
+          <div class="crossfader-labels">
+            <span>Deck A</span>
+            <span id="crossfader-val" class="center-label">Center</span>
+            <span>Deck B</span>
+          </div>
+          <div class="crossfader-slider-wrapper">
+            <input type="range" id="crossfader-slider" min="0" max="100" step="1" value="50" aria-label="Audio Crossfader">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Grid: Visualizer & Connections -->
+    <div class="main-grid">
+      <!-- Left Column: Audio Visualizer -->
+      <section class="visualizer-card glass-panel">
+        <div class="card-header">
+          <h2>Main Master Spectrum</h2>
+          <div class="visualizer-modes">
+            <button id="viz-wave-btn" class="active" title="Waveform">Wave</button>
+            <button id="viz-freq-btn" title="Frequency Bars">Bars</button>
+          </div>
+        </div>
+        
+        <div class="canvas-container">
+          <canvas id="audio-visualizer"></canvas>
+          <div id="mic-prompt-overlay" class="overlay">
+            <div class="overlay-content">
+              <svg class="pulse-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              <h3>Start Audio Engine</h3>
+              <p>Click the main transmission switch below to boot the mixer engine.</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Live Audio Levels meter -->
+        <div class="meter-container">
+          <label>Signal Level (Master)</label>
+          <div class="meter-bar-outer">
+            <div id="meter-fill" class="meter-fill"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Column: Connections & Sound Cards -->
+      <section class="device-preset-card glass-panel">
+        <div class="card-header">
+          <h2>Output Connections</h2>
+          <button id="refresh-devices-btn" class="icon-btn" title="Refresh Audio Devices">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="control-group">
+          <label for="input-device-select">Voiceover Mic Source</label>
+          <div class="select-wrapper">
+            <select id="input-device-select">
+              <option value="">Default Microphone</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label for="output-device-select">Master Speaker Target</label>
+          <div class="select-wrapper">
+            <select id="output-device-select">
+              <option value="">System Default Audio Out</option>
+            </select>
+          </div>
+          <span class="tip-text">Connect your Bluetooth speaker in system settings first. Output routing is supported in Chrome/Edge.</span>
+        </div>
+
+        <div class="presets-section">
+          <h3>MC Mic Vocal Presets</h3>
+          <div class="presets-grid">
+            <button id="preset-bypass" class="preset-btn active" data-preset="bypass">
+              <span class="icon">🔊</span>
+              <span class="label">Raw Mic</span>
+            </button>
+            <button id="preset-megaphone" class="preset-btn" data-preset="megaphone">
+              <span class="icon">📢</span>
+              <span class="label">Megaphone</span>
+            </button>
+            <button id="preset-stadium" class="preset-btn" data-preset="stadium">
+              <span class="icon">🏟️</span>
+              <span class="label">Stadium Echo</span>
+            </button>
+            <button id="preset-robot" class="preset-btn" data-preset="robot">
+              <span class="icon">🤖</span>
+              <span class="label">Robot Voice</span>
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Sampler Pad -->
+    <section class="sampler-panel glass-panel">
+      <div class="card-header">
+        <h2>DJ Sampler</h2>
+      </div>
+      <div class="sampler-grid">
+        <div class="sampler-pad-container">
+          <button id="sampler-airhorn" class="sampler-btn" data-default-name="Airhorn">📢 Airhorn</button>
+          <input type="file" id="file-airhorn" class="sampler-file-input" accept="audio/*" style="display:none;">
+          <button class="sampler-edit-btn" onclick="document.getElementById('file-airhorn').click()" title="Load custom sound">⚙</button>
+        </div>
+        <div class="sampler-pad-container">
+          <button id="sampler-laser" class="sampler-btn" data-default-name="Laser">⚡ Laser</button>
+          <input type="file" id="file-laser" class="sampler-file-input" accept="audio/*" style="display:none;">
+          <button class="sampler-edit-btn" onclick="document.getElementById('file-laser').click()" title="Load custom sound">⚙</button>
+        </div>
+        <div class="sampler-pad-container">
+          <button id="sampler-scratch" class="sampler-btn" data-default-name="Scratch">💿 Scratch</button>
+          <input type="file" id="file-scratch" class="sampler-file-input" accept="audio/*" style="display:none;">
+          <button class="sampler-edit-btn" onclick="document.getElementById('file-scratch').click()" title="Load custom sound">⚙</button>
+        </div>
+        <div class="sampler-pad-container">
+          <button id="sampler-drop" class="sampler-btn" data-default-name="Drop">💣 Drop</button>
+          <input type="file" id="file-drop" class="sampler-file-input" accept="audio/*" style="display:none;">
+          <button class="sampler-edit-btn" onclick="document.getElementById('file-drop').click()" title="Load custom sound">⚙</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Center Control Panel: Voiceover Channel & Power Switch -->
+    <section class="console-panel glass-panel">
+      <div class="console-grid">
+        <!-- Power Switch -->
+        <div class="power-column">
+          <button id="power-btn" class="power-switch-btn offline" aria-label="Toggle Megaphone Power">
+            <div class="power-ring">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                <path d="M18.36 6.64a9 9 0 1 1-12.73 0"/>
+                <line x1="12" y1="2" x2="12" y2="12"/>
+              </svg>
+            </div>
+            <span class="power-text">START MIXER ENGINE</span>
+          </button>
+        </div>
+
+        <!-- Parameters Sliders -->
+        <div class="sliders-column">
+          <div class="slider-row">
+            <div class="slider-header">
+              <span class="slider-name">
+                Voiceover Mic Gain
+                <label class="toggle-checkbox-label">
+                  <input type="checkbox" id="gate-enable-toggle" checked> Active
+                </label>
+              </span>
+              <span id="gain-val" class="slider-val">1.00x</span>
+            </div>
+            <input type="range" id="gain-slider" min="0" max="3" step="0.05" value="1.0" aria-label="Microphone Gain">
+          </div>
+
+          <div class="slider-row">
+            <div class="slider-header">
+              <span class="slider-name">Mic Noise Gate (Feedback Cutoff)</span>
+              <span id="gate-val" class="slider-val">-50 dB</span>
+            </div>
+            <input type="range" id="gate-slider" min="-80" max="-20" step="1" value="-50" aria-label="Noise Gate Threshold">
+          </div>
+
+          <div class="slider-row">
+            <div class="slider-header">
+              <span class="slider-name">Voiceover Echo Delay</span>
+              <span id="delay-val" class="slider-val">0.30s</span>
+            </div>
+            <input type="range" id="delay-slider" min="0.0" max="1.0" step="0.05" value="0.30" aria-label="Echo Delay">
+          </div>
+
+          <div class="slider-row">
+            <div class="slider-header">
+              <span class="slider-name">Voiceover Echo Feedback</span>
+              <span id="feedback-val" class="slider-val">30%</span>
+            </div>
+            <input type="range" id="feedback-slider" min="0" max="90" step="5" value="30" aria-label="Echo Feedback">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Diagnostics Panel -->
+    <section class="diagnostics-panel glass-panel">
+      <div class="card-header">
+        <h2>Diagnostics Console</h2>
+        <button id="clear-logs-btn" class="clear-btn" title="Clear Console Logs">Clear</button>
+      </div>
+      <div id="diagnostics-log" class="logs-container">
+        <div class="log-entry system">[System] Application loaded. Ready.</div>
+      </div>
+    </section>
+
+    <!-- Feedback Prevention & User Guide -->
+    <section class="instructions-card glass-panel">
+      <h2>💡 Essential DJ Guidelines & Feedback Prevention</h2>
+      <div class="instructions-grid">
+        <div class="instruction-step">
+          <div class="step-num">01</div>
+          <div class="step-content">
+            <h3>Beat Matching (Sync)</h3>
+            <p>Enter the base BPM for both loaded tracks. Click **Sync B ➔ A** to match Deck B's tempo to Deck A (it recalculates Deck B's playback rate).</p>
+          </div>
+        </div>
+        <div class="instruction-step">
+          <div class="step-num">02</div>
+          <div class="step-content">
+            <h3>Crossfading Curves</h3>
+            <p>The crossfader uses an equal-power trigonometric curve. Sliding it fully left isolates Deck A, and fully right isolates Deck B. Center blends both tracks.</p>
+          </div>
+        </div>
+        <div class="instruction-step">
+          <div class="step-num">03</div>
+          <div class="step-content">
+            <h3>MC Voiceover Setup</h3>
+            <p>Adjust the **Voiceover Mic Gain** and **Noise Gate** to enable clean talkover. Turn off "Active" if you want to route direct instrument feed without a gate.</p>
+          </div>
+        </div>
+        <div class="instruction-step">
+          <div class="step-num">04</div>
+          <div class="step-content">
+            <h3>Prevent Speaker Squeal</h3>
+            <p>Keep your MC microphone physical position behind the speakers. Use headphones to cue tracks privately to prevent feedback howling.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>&copy; 2026 AeroMix. Designed for low latency browser audio environments.</p>
+    </footer>
+  </main>
+  
+  <!-- JavaScript -->
+  <script src="app.js"></script>
+</body>
+</html>
